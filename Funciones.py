@@ -33,8 +33,8 @@ def mostrar_trabajadores(db):
         registros = cursor.fetchall()
         for registro in registros:
             print(registro[0],registros[1],registros[2],registro[3])
-    except psycopg2.Error as e:
-        print("Error en la consulta", e)
+    except:
+        print("Error en la consulta")
     db.close()
 
 
@@ -50,9 +50,9 @@ def informacion_telefono(db):
     try:     
         cursor.execute(sql,codigo)
         registro = cursor.fetchone()
-        while resultado:
+        while registro:
             print(registro[0],registro[1],registro[2],registro[3],registro[4],registro[5],registro[6],registro[7],registro[8],registro[9])
-            resultado = cursor.fetchone()
+            registro = cursor.fetchone()
     except:
         print("Error en la consulta")
     db.close()
@@ -70,9 +70,9 @@ def informacion_matricula(db):
     try:
         cursor.execute(sql, matricula_camion)
         registro = cursor.fetchone()
-        while resultado:
+        while registro:
             print(registro[0],registro[1],registro[2],registro[3],registro[4],registro[5],registro[6],registro[7],registro[8],registro[9])
-            resultado = cursor.fetchone()
+            registro = cursor.fetchone()
     except:
         print("Error en la consulta")
     db.close()
@@ -111,7 +111,7 @@ def eliminar_camion(db):
         if resultado is not None:
             matricula_camion = resultado[0]
             borrar = "DELETE FROM CAMION WHERE matricula = '{matricula_camion}"
-            cursor.execute(sql, matricula_camion, borrar)
+            cursor.execute(borrar, matricula_camion)
             db.commit()
             print("Camión con matrícula {matricula_camion} se ha eliminado correctamente.")
     except:
@@ -131,13 +131,16 @@ def actualizar_trabajador(db):
 
 
     sql = "UPDATE CONDUCTOR SET telefono = '{nuevo_telefono}', poblacion = '{nuevo_municipio}' WHERE nombre = '{nombre}' AND apellido1 = '{apellido1}'"
-    cursor = cursor.db()
+    cursor = db.cursor()
 
     try:
         cursor.execute(sql,nombre,apellido1,nuevo_telefono,nuevo_municipio)
         if cursor.rowcount == 0:
             print("No se ha encontrado conductor con el nombre {nombre} {apellido1}.")
-    except:
+        else:
             db.commit()
             print("Se ha actualizado correctamente el conductor {nombre} {apellido1}.")
+    except:
+        db.rollback()
+        print("No se ha podido actualizar el conductor.")
     db.close()
