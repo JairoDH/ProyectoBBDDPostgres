@@ -4,7 +4,7 @@ CREATE TABLE CAMION(
     peso_maximo float(7,2) NOT NULL,
 CONSTRAINT cp_matricula PRIMARY KEY(matricula),
 CONSTRAINT ch_matri CHECK (matricula REGEXP '[0-9]{4}[A-Z][A-Z][A-Z]'),
-CONSTRAINT ch_fechalta CHECK (TO_CHAR(fecha_alta,'YYYY-MM-DD') <= '2020-01-01')
+CONSTRAINT ch_fecha CHECK (fecha_alta BETWEEN to_date ('01/01/2020', 'dd/mm/yyyy') AND to_date ('31/12/2050', 'dd/mm/yyyy')
 );
 CREATE TABLE CAMION_CONDUCTOR(
     matricula_camion varchar(7),
