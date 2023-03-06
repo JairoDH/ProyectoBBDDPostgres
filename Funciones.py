@@ -40,15 +40,15 @@ def mostrar_trabajadores(db):
 
 #consultanumero2
 
-def informacion_telefono(db):
+def informacion_codigo(db):
     
     codigo = int(input("Introduzca el código del trabajador: "))
 
-    sql = "SELECT * FROM CONDUCTOR WHERE codigo = %s"
+    sql = "SELECT * FROM CONDUCTOR WHERE codigo = %d"
     cursor = db.cursor()
 
     try:     
-        cursor.execute(sql,codigo)
+        cursor.execute(sql, (codigo, ))
         registro = cursor.fetchone()
         while registro:
             print(registro[0],registro[1],registro[2],registro[3],registro[4],registro[5],registro[6],registro[7],registro[8],registro[9])
@@ -56,7 +56,7 @@ def informacion_telefono(db):
     except:
         print("Error en la consulta")
     db.close()
-    return 
+    
 
 #consultanumero3
 
@@ -69,13 +69,13 @@ def informacion_matricula(db):
 
     try:
         cursor.execute(sql, (matricula_camion,))
-        registro = cursor.fetchone()
-        while registro:
+        registros = cursor.fetchall()
+        for registro in registros:
             print(registro[0],registro[1],registro[2],registro[3],registro[4],registro[5],registro[6],registro[7],registro[8],registro[9])
-            registro = cursor.fetchone()
+        return registros
     except:
         print("Error en la consulta")
-    db.close()
+   
 
 #consultanumero4
 
@@ -85,11 +85,11 @@ def nuevo_camion(db):
     fecha = input("Introduce la fecha de alta (YYYY-MM-DD): ")
     peso = int(input("Introduce el peso máximo a transportar: "))
 
-    sql = "INSERT INTO CAMION (matricula, fecha_alta, peso_maximo) VALUES (%s, %s, %s)"
+    sql = "INSERT INTO CAMION (matricula, fecha_alta, peso_maximo) VALUES ('{matri}', '{fecha}', '{peso}')"
     cursor = db.cursor()
 
     try:
-        cursor.execute(sql, (matri, fecha, peso))
+        cursor.execute(sql.format(matri=matri, fecha=fecha, peso=peso))
         db.commit()
     except:
         db.rollback()
@@ -102,21 +102,23 @@ def eliminar_camion(db):
     dni = input("Introduce el DNI: ")
 
 
-    sql = "SELECT matricula_camion FROM CAMION_CONDUCTOR WHERE codigo_conductor = ( SELECT codigo FROM CONDUCTOR where DNI = '{dni}')"
+    sql = "SELECT matricula_camion FROM CAMION_CONDUCTOR WHERE codigo_conductor = ( SELECT codigo FROM CONDUCTOR where DNI = '%s'"
     cursor = db.cursor()
 
     try:
-        cursor.execute(sql, dni)
+        cursor.execute(sql, (dni,))
         resultado = cursor.fetchone()
         if resultado is not None:
             matricula_camion = resultado[0]
-            borrar = 'DELETE FROM CAMION WHERE matricula = %s'
+            borrar = "DELETE FROM CAMION_CONDUCTOR WHERE matricula = '%s'"
+            borrar2 = "DELETE FROM CAMION WHERE matricula = '%s'"
             cursor.execute(borrar, (matricula_camion,))
+            cursor.execute(borrar2, (matricula_camion,))
             db.commit()
-            print("Camión con matrícula {matricula_camion} se ha eliminado correctamente.")
+            print("Camión con matrícula eliminado correctamente.")
     except:
             db.rollback()
-            print("No hay camión asignado al DNI {dni}.")
+            print("No hay camión asignado al DNI.")
     db.close()
 
 #consultanumero6
@@ -134,12 +136,12 @@ def actualizar_trabajador(db):
     cursor = db.cursor()
 
     try:
-        cursor.execute(sql, (nombre, apellido1, nuevo_telefono, nuevo_municipio))
-        if cursor.rowcount == 0:
-            print("No se ha encontrado conductor con el nombre {nombre} {apellido1}.")
+        cursor.execute(sql.format(nombre=nombre, apellido1=apellido1, nuevo_telefono=nuevo_telefono, nuevo_municipio=nuevo_municipio))
+        if cursor.rowcount == -1:
+            print("No se ha encontrado conductor con el nombre.", nombre, apellido1)
         else:
             db.commit()
-            print("Se ha actualizado correctamente el conductor {nombre} {apellido1}.")
+            print("Se ha actualizado correctamente el conductor.", nombre, apellido1)
     except:
         db.rollback()
         print("No se ha podido actualizar el conductor.")
