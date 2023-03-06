@@ -48,7 +48,7 @@ def informacion_codigo(db):
     cursor = db.cursor()
 
     try:     
-        cursor.execute(sql, (codigo, ))
+        cursor.execute(sql, (codigo))
         registro = cursor.fetchone()
         while registro:
             print(registro[0],registro[1],registro[2],registro[3],registro[4],registro[5],registro[6],registro[7],registro[8],registro[9])
@@ -68,7 +68,7 @@ def informacion_matricula(db):
     cursor = db.cursor()
 
     try:
-        cursor.execute(sql, (matricula_camion,))
+        cursor.execute(sql, (matricula_camion))
         registros = cursor.fetchall()
         for registro in registros:
             print(registro[0],registro[1],registro[2],registro[3],registro[4],registro[5],registro[6],registro[7],registro[8],registro[9])
@@ -89,7 +89,7 @@ def nuevo_camion(db):
     cursor = db.cursor()
 
     try:
-        cursor.execute(sql.format(matri=matri, fecha=fecha, peso=peso))
+        cursor.execute(sql(matri,fecha,peso))
         db.commit()
     except:
         db.rollback()
@@ -102,18 +102,18 @@ def eliminar_camion(db):
     dni = input("Introduce el DNI: ")
 
 
-    sql = "SELECT matricula_camion FROM CAMION_CONDUCTOR WHERE codigo_conductor = ( SELECT codigo FROM CONDUCTOR where DNI = '%s'"
+    sql = "SELECT matricula_camion FROM CAMION_CONDUCTOR WHERE codigo_conductor = ( SELECT codigo FROM CONDUCTOR where DNI = %s"
     cursor = db.cursor()
 
     try:
-        cursor.execute(sql, (dni,))
+        cursor.execute(sql, (dni))
         resultado = cursor.fetchone()
         if resultado is not None:
             matricula_camion = resultado[0]
-            borrar = "DELETE FROM CAMION_CONDUCTOR WHERE matricula = '%s'"
-            borrar2 = "DELETE FROM CAMION WHERE matricula = '%s'"
-            cursor.execute(borrar, (matricula_camion,))
-            cursor.execute(borrar2, (matricula_camion,))
+            borrar = "DELETE FROM CAMION_CONDUCTOR WHERE matricula = %s"
+            borrar2 = "DELETE FROM CAMION WHERE matricula = %s"
+            cursor.execute(borrar, (matricula_camion))
+            cursor.execute(borrar2, (matricula_camion))
             db.commit()
             print("Camión con matrícula eliminado correctamente.")
     except:
@@ -136,7 +136,7 @@ def actualizar_trabajador(db):
     cursor = db.cursor()
 
     try:
-        cursor.execute(sql.format(nombre=nombre, apellido1=apellido1, nuevo_telefono=nuevo_telefono, nuevo_municipio=nuevo_municipio))
+        cursor.execute(sql(nombre,apellido1,nuevo_telefono,nuevo_municipio))
         if cursor.rowcount == -1:
             print("No se ha encontrado conductor con el nombre.", nombre, apellido1)
         else:
