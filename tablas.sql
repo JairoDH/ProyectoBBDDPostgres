@@ -8,19 +8,19 @@ CONSTRAINT ch_fecha CHECK (fecha_alta BETWEEN to_date ('01/01/2020', 'dd/mm/yyyy
 ));
 CREATE TABLE CAMION_CONDUCTOR(
     matricula_camion varchar(7),
-    codigo_conductor number(5),
+    codigo_conductor decimal(5),
     fecha date,
 CONSTRAINT ca_matricami FOREIGN KEY (matricula_camion) references CAMION(matricula),
 CONSTRAINT ca_codicondu FOREIGN KEY (codigo_conductor) references CONDUCTOR(codigo)
 );
 CREATE TABLE CONDUCTOR(
-    codigo number(5),
+    codigo decimal(5),
     nombre varchar(20),
     apellido1 varchar(20),
     apellido2 varchar(20),
     DNI varchar(9) NOT NULL,
     calle varchar(20),
-    n_calle number(5),
+    n_calle decimal(5),
     provincia varchar(10),
     poblacion varchar(10),
     telefono varchar(9) NOT NULL,
