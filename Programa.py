@@ -19,5 +19,5 @@ while opcion != 0 :
         actualizar_trabajador(db)
     else:
         print("Opción incorrecta.")
-        opcion = menu()
+    opcion = menu()
 desconectar_bbdd(db)
