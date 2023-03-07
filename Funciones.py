@@ -4,7 +4,12 @@ import sys
 #conectarse
 def conectar_bbdd(host,user,password,database):
     try:
-        db = psycopg2.connect(host,user,password,database)
+        db = psycopg2.connect(
+            host=host,
+            user=user,
+            password=password,
+            database=database
+            )
         return db
     except psycopg2.Error as e:
         print("No se pudo conectar a la base de datos",e)
@@ -15,7 +20,7 @@ def desconectar_bbdd(db):
 def menu():
     print("Menu: ")
     print("1. Mostrar trabajadores. ")
-    print("2. Consultar trabajador por su teléfono. ")
+    print("2. Consultar trabajador por código conductor. ")
     print("3. Mostrar trabajadores asociados por matrícula. ")
     print("4. Introducir camión nuevo a la empresa: ")
     print("5. Eliminar camión.")
@@ -105,20 +110,17 @@ def eliminar_camion(db):
     dni = input("Introduce el DNI: ")
 
 
-    sql = "SELECT matricula_camion FROM CAMION_CONDUCTOR WHERE codigo_conductor = ( SELECT codigo FROM CONDUCTOR where DNI = %s)"
     cursor = db.cursor()
 
     try:
-        cursor.execute(sql, (dni))
-        resultado = cursor.fetchone()
-        if resultado is not None:
-            matricula_camion = resultado[0]
-            borrar = "DELETE FROM CAMION_CONDUCTOR WHERE matricula_camion = %s"
-            borrar2 = "DELETE FROM CAMION WHERE matricula  = %s"
-            cursor.execute(borrar, (matricula_camion))
-            cursor.execute(borrar2, (matricula_camion))
-            db.commit()
+        sql = "DELETE FROM CAMION_CONDUCTOR WHERE codigo_conductor IN ( SELECT codigo FROM CONDUCTOR WHERE DNI = '{dni}')"
+        cursor.execute(sql.format(dni=dni))
+        if cursor.rowcount > 0:
             print("Camión eliminado correctamente.")
+
+        sql = "DELETE FROM CAMION WHERE matricula IN ( SELECT matricula_camion FROM CAMION_CONDUCTOR WHERE codigo_conductor IN ( SELECT codigo FROM CONDUCTOR WHERE DNI = '{dni}'))"
+        cursor.execute(sql.format(dni=dni))
+        db.commit()
     except psycopg2.Error as e:
         print(e)
         sys.exit(1)
@@ -131,7 +133,7 @@ def actualizar_trabajador(db):
     nombre = input("Dime el nombre del conductor: ")
     apellido1 = input("Dime el primer apellido del conductor: ")
 
-    nuevo_telefono = input("Introduce el número de teléfono: ")
+    nuevo_telefono = input("Introduce el nuevo número de teléfono: ")
     nuevo_municipio = input("Introduce el nuevo municipio: ")
 
 
