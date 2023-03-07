@@ -20,7 +20,7 @@ CREATE TABLE CONDUCTOR(
     apellido2 varchar(20),
     DNI varchar(9) NOT NULL,
     calle varchar(20),
-    nº_calle int(5),
+    n_calle number(5),
     provincia varchar(10),
     poblacion varchar(10),
     telefono varchar(9) NOT NULL,
