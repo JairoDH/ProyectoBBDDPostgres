@@ -26,7 +26,7 @@ CREATE TABLE CONDUCTOR(
     telefono varchar(9) NOT NULL,
 CONSTRAINT cp_codi PRIMARY KEY (codigo),
 CONSTRAINT un_dni UNIQUE (DNI),
-CONSTRAINT ch_dni CHECK (REGEXP_LIKE(DNI '[0-9]{8}[A-Z]'),
-CONSTRAINT ch_tele check (REGEXP_LIKE(telefono '^[679][0-9]{8}'),
+CONSTRAINT ch_dni CHECK (REGEXP_LIKE(DNI, '[0-9]{8}[A-Z]'),
+CONSTRAINT ch_tele check (REGEXP_LIKE(telefono, '^[679][0-9]{8}'),
 CONSTRAINT ch_nom check (nombre = UPPER (nombre))
 );
