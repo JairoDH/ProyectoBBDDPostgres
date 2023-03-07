@@ -119,7 +119,7 @@ def eliminar_camion(db):
             cursor.execute(borrar2, (matricula_camion))
             db.commit()
             print("Camión eliminado correctamente.")
-    except MySQLdb.Error as e:
+    except psycopg2.Error as e:
         print(e)
         sys.exit(1)
     
